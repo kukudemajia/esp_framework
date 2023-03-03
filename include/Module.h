@@ -3,22 +3,19 @@
 #ifndef _MODULE_h
 #define _MODULE_h
 
+#include <ESP8266WebServer.h>
 #include "Config.h"
 #include "Led.h"
-#include "WifiMgr.h"
+#include "Wifi.h"
 #ifndef DISABLE_MQTT
 #include "Mqtt.h"
 #endif
-#include "Log.h"
+#include "Debug.h"
 #include "Util.h"
 
 class Module
 {
-protected:
-    uint16_t configCrc = 0;
-
 public:
-    Module *next = nullptr;
     virtual void init();
     virtual String getModuleName();
     virtual String getModuleCNName();
@@ -34,12 +31,12 @@ public:
     virtual void resetConfig();
     virtual void saveConfig(bool isEverySecond);
 
-    virtual void httpAdd(WebServer *server);
-    virtual void httpHtml(WebServer *server);
-    virtual String httpGetStatus(WebServer *server);
+    virtual void httpAdd(ESP8266WebServer *server);
+    virtual void httpHtml(ESP8266WebServer *server);
+    virtual String httpGetStatus(ESP8266WebServer *server);
 
 #ifndef DISABLE_MQTT
-    virtual bool mqttCallback(char *topic, char *payload, char *cmnd);
+    virtual void mqttCallback(char *topic, char *payload, char *cmnd);
     virtual void mqttConnected();
 #ifndef DISABLE_MQTT_DISCOVERY
     virtual void mqttDiscovery(bool isEnable = true);

@@ -47,24 +47,7 @@ char *Util::dtostrfd(double number, unsigned char prec, char *s)
     }
     else
     {
-        dtostrf(number, 1, prec, s);
-        while (prec > 0)
-        {
-            if (s[strlen(s) - 1] == '0')
-            {
-                s[strlen(s) - 1] = 0;
-            }
-            else if (s[strlen(s) - 1] == '.')
-            {
-                s[strlen(s) - 1] = 0;
-                break;
-            }
-            else
-            {
-                break;
-            }
-        }
-        return s;
+        return dtostrf(number, 1, prec, s);
     }
 }
 
@@ -106,65 +89,4 @@ bool Util::endWith(char *str, const char *suffix, uint16_t strLen)
     }
     size_t suffixLen = strlen(suffix);
     return suffixLen <= strLen && strncmp(str + strLen - suffixLen, suffix, suffixLen) == 0 ? true : false;
-}
-
-inline int32_t Util::timeDifference(uint32_t prev, uint32_t next)
-{
-    return ((int32_t)(next - prev));
-}
-
-int32_t Util::timePassedSince(uint32_t timestamp)
-{
-    // Compute the number of milliSeconds passed since timestamp given.
-    // Note: value can be negative if the timestamp has not yet been reached.
-    return timeDifference(timestamp, millis());
-}
-
-bool Util::timeReached(uint32_t timer)
-{
-    // Check if a certain timeout has been reached.
-    const long passed = timePassedSince(timer);
-    return (passed >= 0);
-}
-
-void Util::setNextTimeInterval(uint32_t &timer, const uint32_t step)
-{
-    timer += step;
-    const long passed = timePassedSince(timer);
-    if (passed < 0)
-    {
-        return;
-    } // Event has not yet happened, which is fine.
-    if (static_cast<unsigned long>(passed) > step)
-    {
-        // No need to keep running behind, start again.
-        timer = millis() + step;
-        return;
-    }
-    // Try to get in sync again.
-    timer = millis() + (step - passed);
-}
-
-int32_t Util::timePassedSinceUsec(uint32_t timestamp)
-{
-    return timeDifference(timestamp, micros());
-}
-
-bool Util::timeReachedUsec(uint32_t timer)
-{
-    // Check if a certain timeout has been reached.
-    const long passed = timePassedSinceUsec(timer);
-    return (passed >= 0);
-}
-
-int Util::split(char *str, const char *delim, char dst[][80])
-{
-    char *s = strdup(str);
-    char *token;
-    int n = 0;
-    for (token = strsep(&s, delim); token != NULL; token = strsep(&s, delim))
-    {
-        strcpy(dst[n++], token);
-    }
-    return n;
 }

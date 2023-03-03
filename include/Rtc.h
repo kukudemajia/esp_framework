@@ -6,7 +6,6 @@
 #include "Arduino.h"
 
 #define LEAP_YEAR(Y) (((1970 + Y) > 0) && !((1970 + Y) % 4) && (((1970 + Y) % 100) || !((1970 + Y) % 400)))
-const uint32_t START_VALID_TIME = 1451602800; // Time is synced and after 2016-01-01
 
 typedef struct
 {
@@ -34,9 +33,6 @@ const uint16_t RTC_MEM_VALID = 0xA55A;
 class Rtc
 {
 protected:
-#ifdef ESP32
-    static RTC_NOINIT_ATTR RtcReboot RtcDataReboot;
-#endif
     static uint32_t rtcRebootCrc;
     static uint8_t operationFlag;
     static void getNtp();
@@ -51,9 +47,9 @@ public:
     static String timeSince(uint32_t const start);
 
     static String GetBuildDateAndTime();
-    static bool callModule(uint8_t function);
+    static void perSecondDo();
     static void init();
-    static void addSecond();
+    static void loop();
 
     static uint32_t getRtcRebootCrc();
     static void rtcRebootLoad();

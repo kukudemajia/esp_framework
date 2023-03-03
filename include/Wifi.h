@@ -1,7 +1,7 @@
 // Wifi.h
 
-#ifndef _WIFIMGR_h
-#define _WIFIMGR_h
+#ifndef _WIFI_h
+#define _WIFI_h
 
 #include <WiFiClient.h>
 #include <DNSServer.h>
@@ -13,7 +13,7 @@
 #endif
 #define MinimumWifiSignalQuality 8
 
-class WifiMgr
+class Wifi
 {
 private:
     static bool connect;
@@ -28,14 +28,10 @@ private:
 
 public:
     static unsigned long configPortalStart;
-    static unsigned long disconnectTime;
     static bool isDHCP;
-#ifdef ESP8266
     static WiFiEventHandler STAGotIP;
-//static WiFiEventHandler STADisconnected;
-#else
-    static void wiFiEvent(WiFiEvent_t event);
-#endif
+    //static WiFiEventHandler STADisconnected;
+    static WiFiClient wifiClient;
     static void connectWifi();
     static void setupWifi();
     static void setupWifiManager(bool resetSettings);
@@ -44,10 +40,7 @@ public:
     static uint8_t waitForConnectResult();
     static void tryConnect(String ssid, String pass);
 
-    static void perSecondDo();
     static void loop();
-    static bool callModule(uint8_t function);
-    static IPAddress networkAddress();
 };
 
 #endif

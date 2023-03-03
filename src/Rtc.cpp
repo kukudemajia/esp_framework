@@ -1,10 +1,8 @@
-#include "Common.h"
+#include <ESP8266WiFi.h>
 #include "Rtc.h"
-#include "Log.h"
+#include "sntp.h"
+#include "Debug.h"
 
-#ifdef ESP32
-RTC_NOINIT_ATTR RtcReboot Rtc::RtcDataReboot;
-#endif
 RtcReboot Rtc::rtcReboot;
 uint32_t Rtc::rtcRebootCrc = 0;
 TIME_T Rtc::rtcTime;
@@ -145,56 +143,61 @@ void Rtc::breakTime(uint32_t time_input, TIME_T &tm)
     tm.valid = (time_input > 1451602800); // 2016-01-01
 }
 
-void Rtc::addSecond()
+void Rtc::loop()
 {
-    if (utcTime > 0)
+    if (bitRead(operationFlag, 0))
     {
-        utcTime += 1;
-        breakTime(utcTime, rtcTime);
-        //Log::Info(PSTR("Ticker: %04d-%02d-%02d %02d:%02d:%02d"), rtcTime.year, rtcTime.month, rtcTime.day_of_month, rtcTime.hour, rtcTime.minute, rtcTime.second);
+        bitClear(operationFlag, 0);
+        getNtp();
     }
 }
 
 void Rtc::getNtp()
 {
-    if (bitRead(Config::statusFlag, 0) || bitRead(Config::statusFlag, 2))
+    if (WiFi.status() == WL_CONNECTED)
     {
         uint32_t ntp_time = sntp_get_current_timestamp();
-        if (ntp_time > START_VALID_TIME)
+        if (ntp_time > 1451602800)
         {
-            utcTime = ntp_time + (3600 * 8); // 修正时区
+            utcTime = ntp_time;
             breakTime(utcTime, rtcTime);
-            //Log::Info(PSTR("NTP: %04d-%02d-%02d %02d:%02d:%02d"), rtcTime.year, rtcTime.month, rtcTime.day_of_month, rtcTime.hour, rtcTime.minute, rtcTime.second);
+            Debug::AddInfo(PSTR("NTP: %04d-%02d-%02d %02d:%02d:%02d"), rtcTime.year, rtcTime.month, rtcTime.day_of_month, rtcTime.hour, rtcTime.minute, rtcTime.second);
         }
     }
 }
 
-bool Rtc::callModule(uint8_t function)
+void Rtc::perSecondDo()
 {
-    switch (function)
+    bool isAdd = false;
+    if (utcTime == 0 || perSecond % 600 == 0)
     {
-    case FUNC_EVERY_SECOND:
-        if (utcTime == 0 || perSecond % 600 == 0)
-        {
-            getNtp();
-        }
-        break;
+        bitSet(operationFlag, 0);
     }
-    return false;
+    if (utcTime > 0)
+    {
+        utcTime += 1;
+        breakTime(utcTime, rtcTime);
+        //Debug::AddInfo(PSTR("Ticker: %04d-%02d-%02d %02d:%02d:%02d"), rtcTime.year, rtcTime.month, rtcTime.day_of_month, rtcTime.hour, rtcTime.minute, rtcTime.second);
+    }
 }
 
 void Rtc::init()
 {
+    sntp_stop();
     if (globalConfig.wifi.ntp[0] != '\0')
     {
-        Log::Info(PSTR("NTP Server: %s"), globalConfig.wifi.ntp);
-        configTime(0, 0, globalConfig.wifi.ntp);
+        Debug::AddInfo(PSTR("NTP Server: %s"), globalConfig.wifi.ntp);
+        sntp_setservername(0, globalConfig.wifi.ntp);
     }
     else
     {
-        Log::Info(PSTR("NTP Server: default"));
-        configTime(0, 0, "120.25.115.20", "203.107.6.88", "ntp3.aliyun.com");
+        Debug::AddInfo(PSTR("NTP Server: default"));
+        sntp_setservername(0, (char *)"120.25.115.20");
+        sntp_setservername(1, (char *)"203.107.6.88");
+        sntp_setservername(2, (char *)"ntp3.aliyun.com");
     }
+    sntp_set_timezone(8);
+    sntp_init();
     utcTime = 0;
 }
 
@@ -211,12 +214,7 @@ uint32_t Rtc::getRtcRebootCrc()
 
 void Rtc::rtcRebootLoad()
 {
-#ifdef ESP8266
     ESP.rtcUserMemoryRead(100 - sizeof(RtcReboot), (uint32_t *)&rtcReboot, sizeof(RtcReboot)); // 0x280
-#else
-    //espconfig_spiflash_read(SPI_FLASH_SEC_SIZE - sizeof(RtcReboot), (uint32_t *)&rtcReboot, sizeof(RtcReboot));
-    rtcReboot = RtcDataReboot;
-#endif
     if (rtcReboot.valid != RTC_MEM_VALID)
     {
         memset(&rtcReboot, 0, sizeof(RtcReboot));
@@ -232,12 +230,7 @@ void Rtc::rtcRebootSave()
     if (getRtcRebootCrc() != rtcRebootCrc)
     {
         rtcReboot.valid = RTC_MEM_VALID;
-#ifdef ESP8266
         ESP.rtcUserMemoryWrite(100 - sizeof(RtcReboot), (uint32_t *)&rtcReboot, sizeof(RtcReboot));
-#else
-        //espconfig_spiflash_write(SPI_FLASH_SEC_SIZE - sizeof(RtcReboot), (uint32_t *)&rtcReboot, sizeof(RtcReboot));
-        RtcDataReboot = rtcReboot;
-#endif
         rtcRebootCrc = getRtcRebootCrc();
     }
 }

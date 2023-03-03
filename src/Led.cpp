@@ -1,3 +1,4 @@
+#include <ESP8266WiFi.h>
 #include "Led.h"
 #include "Module.h"
 
@@ -35,7 +36,7 @@ void Led::loop()
         }
         Led::ledType = 3;
     }
-    else if (!bitRead(Config::statusFlag, 0) && !bitRead(Config::statusFlag, 2))
+    else if (WiFi.status() != WL_CONNECTED)
     {
         if (Led::ledType != 0)
         {
@@ -44,7 +45,7 @@ void Led::loop()
         }
     }
 #ifndef DISABLE_MQTT
-    else if (globalConfig.mqtt.port != 0 && !bitRead(Config::statusFlag, 1))
+    else if (!Mqtt::mqttClient.connected())
     {
         if (Led::ledType != 1)
         {
@@ -61,17 +62,6 @@ void Led::loop()
             ledTicker->attach(5, led, 200);
         }
     }
-}
-
-bool Led::callModule(uint8_t function)
-{
-    switch (function)
-    {
-    case FUNC_LOOP:
-        loop();
-        break;
-    }
-    return false;
 }
 
 void Led::on()

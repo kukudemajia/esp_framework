@@ -4,7 +4,7 @@
 #define _HTTP_h
 
 #include "Arduino.h"
-#include "Common.h"
+#include <ESP8266WebServer.h>
 
 class Http
 {
@@ -17,7 +17,6 @@ private:
     static void handleDiscovery();
 #endif
 #endif
-    static void handleHttp();
     static void handledhcp();
     static void handleScanWifi();
     static void handleWifi();
@@ -27,20 +26,13 @@ private:
     static void handleOTA();
     static void handleGetStatus();
     static void handleUpdate();
-    static void handleUpdateUpload();
-#ifdef USE_UFILESYS
-    static void handleFileDo();
-    static void handleUploadFile();
-    static void handleUploadFileUpload();
-#endif
     static bool checkAuth();
 
 public:
-    static WebServer *server;
-    static void init();
+    static ESP8266WebServer *server;
+    static void begin();
     static void stop();
     static void loop();
-    static bool callModule(uint8_t function);
     static bool captivePortal();
 
     static void OTA(String url);
