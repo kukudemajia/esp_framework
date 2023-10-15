@@ -2,7 +2,7 @@
     "name": "esp_framework",
     "keywords": "esp framework",
     "description": "esp framework",
-    "version": "1.0",
+    "version": "2023.03.02.1000",
     "frameworks": "arduino",
     "platforms": "espressif8266"
 }
