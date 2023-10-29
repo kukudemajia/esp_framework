@@ -41,9 +41,10 @@ message MqttConfigMessage {
     string pass = 4 [(nanopb).max_size = 30];
     bool retain = 5;
     string topic = 6 [(nanopb).max_size = 50];
-    bool discovery = 7;
-    string discovery_prefix = 8 [(nanopb).max_size = 30];
-    uint32 interval = 9 [(nanopb).int_size = IS_16];
+    string force_ota_topic = 7 [(nanopb).max_size = 50];
+    bool discovery = 8;
+    string discovery_prefix = 9 [(nanopb).max_size = 30];
+    uint32 interval = 10 [(nanopb).int_size = IS_16];
 }
 
 message DebugConfigMessage {

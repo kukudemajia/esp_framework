@@ -58,6 +58,7 @@ public:
     static String getCmndTopic(String topic, String devType = "");
     static String getStatTopic(String topic, String devType = "");
     static String getTeleTopic(String topic, String devType = "");
+    static String getForceOtaTopic(String topic, String devType = "");
 
 #if !defined USE_ASYNC_MQTT_CLIENT and !defined USE_ESP32_MQTT
     static PubSubClient &setClient(Client &client);

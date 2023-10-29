@@ -293,6 +293,12 @@ String Mqtt::getTeleTopic(String topic, String devType)
     return getTopic(2, topic, devType);
 }
 
+String Mqtt::getForceOtaTopic(String topic, String devType)
+{
+    return getTopic(3, topic, devType);
+}
+
+
 void Mqtt::mqttSetLoopCallback(MQTT_CALLBACK_SIGNATURE)
 {
 #ifdef USE_ASYNC_MQTT_CLIENT
@@ -389,14 +395,23 @@ bool Mqtt::unsubscribe(const char *topic)
 
 String Mqtt::getTopic(uint8_t prefix, String subtopic, String devType)
 {
-    // 0: Cmnd  1:Stat 2:Tele
-    String fulltopic = String(globalConfig.mqtt.topic);
+    // 0: Cmnd  1:Stat 2:Tele 3:Force_Ota
+    
+    String fulltopic;
+    if(prefix == 3)
+    {
+        fulltopic = String(globalConfig.mqtt.force_ota_topic);
+    }
+    else
+    {
+        fulltopic = String(globalConfig.mqtt.topic);
+    }
     if ((0 == prefix) && (-1 == fulltopic.indexOf(F("%prefix%"))))
     {
         fulltopic += F("/%prefix%"); // Need prefix for commands to handle mqtt topic loops
     }
     fulltopic.replace(F("%prefix%"), (prefix == 0 ? F("cmnd") : ((prefix == 1 ? F("stat") : F("tele")))));
-    fulltopic.replace(F("%hostname%"), devType.length() > 0 ? String(UID) + F("/") + devType : UID);
+    fulltopic.replace(F("%hostname%"), UID);
     fulltopic.replace(F("%module%"), module ? module->getModuleName() : F("module"));
     fulltopic.replace(F("#"), F(""));
     fulltopic.replace(F("//"), F("/"));

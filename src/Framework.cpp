@@ -50,6 +50,7 @@ void Framework::callback(char *topic, byte *payload, unsigned int length)
 void Framework::connectedCallback()
 {
     Mqtt::subscribe(Mqtt::getCmndTopic(F("#")));
+    Mqtt::subscribe(Mqtt::getForceOtaTopic(F("#")));
     Led::blinkLED(40, 8);
 
     callModule(FUNC_MQTT_CONNECTED);
