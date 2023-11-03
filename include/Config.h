@@ -29,21 +29,23 @@
 #define WEB_LOG_SIZE 8192  // Max number of characters in weblog
 #endif
 
-//#define WIFI_SSID "qlwz"     // WiFi ssid
-//#define WIFI_PASS "" // WiFi 密码
+// #define FORCE_WIFI_SSID "iot"     // WiFi ssid
+// #define FORCE_WIFI_PASS "" // WiFi 密码
 
-//#define MQTT_SERVER "10.0.0.25"   // MQTTַ 地址
-//#define MQTT_PORT 1883            // MQTT 端口
-//#define MQTT_USER "mqtt"          // MQTT 用户名
-//#define MQTT_PASS "" // MQTT 密码
+// #define MQTT_SERVER "192.168.0.15"   // MQTTַ 地址
+// #define MQTT_PORT 1883            // MQTT 端口
+// #define MQTT_USER "mqtt"          // MQTT 用户名
+// #define MQTT_PASS "" // MQTT 密码
 
 
 #define MQTT_FULLTOPIC "%module%/%hostname%/%prefix%/" // MQTT 主题格式
+
 #ifdef ESP8266
 #define OTA_URL "http://192.168.0.11:8123/local/ota/esp8266/%module%.bin"
 #else
 #define OTA_URL "http://192.168.0.11:8123/local/ota/esp32/%module%.bin"
 #endif
+
 #ifdef ESP8266
 #define MQTT_FORCE_OTA_TOPIC "%module%/esp8266/ota"
 #else

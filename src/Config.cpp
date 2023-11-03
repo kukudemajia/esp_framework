@@ -78,13 +78,14 @@ void Config::resetConfig()
 #ifdef MQTT_PASS
     strcpy(globalConfig.mqtt.pass, MQTT_PASS);
 #endif
-    globalConfig.mqtt.discovery = false;
+    globalConfig.mqtt.discovery = true;//默认开启homeassistant自动发现功能
     strcpy(globalConfig.mqtt.discovery_prefix, "homeassistant");
-
 #ifdef MQTT_FULLTOPIC
     strcpy(globalConfig.mqtt.topic, MQTT_FULLTOPIC);
 #endif
-
+#ifdef MQTT_FORCE_OTA_TOPIC
+    strcpy(globalConfig.mqtt.force_ota_topic, MQTT_FORCE_OTA_TOPIC);
+#endif
 #ifdef HTTP_PORT
     globalConfig.http.port = HTTP_PORT;
 #else
@@ -96,7 +97,6 @@ void Config::resetConfig()
 #ifdef HTTP_PASS
     strcpy(globalConfig.http.pass, HTTP_PASS);
 #endif
-
 #ifdef OTA_URL
     strcpy(globalConfig.http.ota_url, OTA_URL);
 #endif
