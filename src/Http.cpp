@@ -735,13 +735,23 @@ void Http::handleWifi()
         return;
     }
     String password = server->arg(F("wifi_password"));
-
+//如果已连WIFI需要更换SSID，首先需要判断SSID、密码正确后才保存配置，避免因为输入错误造成WIFI丢失。
     if (WiFi.getMode() == WIFI_STA)
     {
-        strcpy(globalConfig.wifi.ssid, wifi.c_str());
-        strcpy(globalConfig.wifi.pass, password.c_str());
-        Config::saveConfig();
-        server->send_P(200, PSTR("text/html"), PSTR("{\"code\":1,\"msg\":\"设置WiFi信息成功，重启模块（手动）使用新的Wifi信息连接。\"}"));
+        unsigned long startTime;
+        startTime = millis();
+        WiFi.begin(wifi.c_str(), password.c_str());
+        while ((millis() - startTime) < 15000)  //设置最长15秒连接时间
+        {
+            if (WiFi.isConnected())
+            {
+                strcpy(globalConfig.wifi.ssid, wifi.c_str());
+                strcpy(globalConfig.wifi.pass, password.c_str());
+                Config::saveConfig();
+                break;
+            }
+        }
+        ESP_Restart(); //无论新的SSID是否连接成功都会自动重启
     }
     else
     {
