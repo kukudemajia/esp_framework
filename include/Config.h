@@ -29,8 +29,10 @@
 #define WEB_LOG_SIZE 8192  // Max number of characters in weblog
 #endif
 
-// #define FORCE_WIFI_SSID "iot"     // WiFi ssid
-// #define FORCE_WIFI_PASS "" // WiFi 密码
+// #define FORCE_WIFI_SSID "iot"     // 强制WiFi ssid
+// #define FORCE_WIFI_PASS "" // 强制WiFi 密码
+// #define WIFI_SSID "iot"     // 默认WiFi ssid
+// #define WIFI_PASS "" // 默认WiFi 密码
 
 // #define MQTT_SERVER "192.168.0.15"   // MQTTַ 地址
 // #define MQTT_PORT 1883            // MQTT 端口
@@ -40,12 +42,14 @@
 
 #define MQTT_FULLTOPIC "%module%/%hostname%/%prefix%/" // MQTT 主题格式
 
+// 默认OTA升级URL
 #ifdef ESP8266
 #define OTA_URL "http://192.168.0.11:8123/local/ota/esp8266/%module%.bin"
 #else
 #define OTA_URL "http://192.168.0.11:8123/local/ota/esp32/%module%.bin"
 #endif
 
+// 批量OTA升级命令 MQTT主题，设备接收到命令后将使用默认OTA升级URL升级
 #ifdef ESP8266
 #define MQTT_FORCE_OTA_TOPIC "%module%/esp8266/ota"
 #else
