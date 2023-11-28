@@ -109,14 +109,13 @@ void WifiMgr::setupWifi()
     WiFi.persistent(false); // Solve possible wifi init errors (re-add at 6.2.1.16 #4044, #4083)
     WiFi.disconnect(true);  // Delete SDK wifi config
     delay(200);
+    WIFI_setHostname(UID);
     WiFi.mode(WIFI_STA);
     delay(100);
     if (!WiFi.getAutoConnect())
     {
         WiFi.setAutoConnect(true);
     }
-    //WiFi.setAutoReconnect(true);
-    WIFI_setHostname(UID);
     Log::Info(PSTR("Connecting to %s %s Wifi"), globalConfig.wifi.ssid, globalConfig.wifi.pass);
 #ifdef ESP8266
     STAGotIP = WiFi.onStationModeGotIP([](const WiFiEventStationModeGotIP &event) {

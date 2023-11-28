@@ -163,7 +163,7 @@ bool Config::doConfig(uint8_t *buf, uint8_t *data, uint16_t len, const char *nam
     if (!status)
     {
         globalConfig.debug.type = 1;
-        Log::Error(PSTR("readConfig . . . %s Error"), name);
+        Log::Error(PSTR("resetConfig . . . %s."), name);
         resetConfig();
     }
     else
