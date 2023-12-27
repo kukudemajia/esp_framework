@@ -94,10 +94,9 @@ uint32_t ESP_getSketchSize(void);
 int8_t readUserData(size_t src_offset, void *dst, size_t size);
 int8_t writeUserData(size_t dst_offset, const void *src, size_t size);
 
-#define PWM_CHANNEL_OFFSET 8
 uint32_t pin2chan(uint32_t pin);
-void analogWrite(uint8_t pin, int val);
-extern uint8_t pwm_channel[8];
+void analogWriteA(uint8_t pin, int val);
+extern uint8_t pwm_channel[6];
 #endif
 
 uint32_t FlashWriteStartSector(void);

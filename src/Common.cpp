@@ -249,7 +249,7 @@ uint8_t pin2chan(uint8_t pin)
     return 0;
 }
 
-inline void analogWriteA(uint8_t pin, int val)
+void analogWriteA(uint8_t pin, int val)
 {
     uint8_t channel = pin2chan(pin);
     ledcWrite(channel, val);
