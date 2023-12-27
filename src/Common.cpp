@@ -225,31 +225,34 @@ uint32_t ESP_getSketchSize(void)
     return sketchsize;
 }
 
-uint8_t pwm_channel[8] = {99, 99, 99, 99, 99, 99, 99, 99};
+uint8_t pwm_channel[6] = {99, 99, 99, 99, 99, 99};
 uint8_t pin2chan(uint8_t pin)
 {
-    for (uint8_t cnt = 0; cnt < 8; cnt++)
+    for (uint8_t cnt = 0; cnt < 6; cnt++)
     {
         if (pwm_channel[cnt] == 99)
         {
             pwm_channel[cnt] = pin;
-            uint8_t ch = cnt + PWM_CHANNEL_OFFSET;
-            ledcSetup(ch, 1000, 10);
+            uint8_t ch = cnt;
+            ledcSetup(ch, 1000, 8);
             ledcAttachPin(pin, ch);
             return cnt;
         }
         if ((pwm_channel[cnt] < 99) && (pwm_channel[cnt] == pin))
         {
+            uint8_t ch = cnt;
+            ledcSetup(ch, 1000, 8);
+            ledcAttachPin(pin, ch);
             return cnt;
         }
     }
     return 0;
 }
 
-inline void analogWrite(uint8_t pin, int val)
+inline void analogWriteA(uint8_t pin, int val)
 {
     uint8_t channel = pin2chan(pin);
-    ledcWrite(channel + PWM_CHANNEL_OFFSET, val);
+    ledcWrite(channel, val);
 }
 
 int8_t readUserData(size_t src_offset, void *dst, size_t size)
