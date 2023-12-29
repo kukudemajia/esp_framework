@@ -116,7 +116,7 @@ void WifiMgr::setupWifi()
     {
         WiFi.setAutoConnect(true);
     }
-    Log::Info(PSTR("Connecting to %s %s Wifi"), globalConfig.wifi.ssid, globalConfig.wifi.pass);
+    Log::Info(PSTR("Connecting to %s Wifi"), globalConfig.wifi.ssid);
 #ifdef ESP8266
     STAGotIP = WiFi.onStationModeGotIP([](const WiFiEventStationModeGotIP &event) {
 #ifdef WIFI_CONNECT_TIMEOUT
